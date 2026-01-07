@@ -11,7 +11,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 
 abstract class LiteralCommandBuilder() : CommandBuilder {
     abstract val name: String
-    protected val rootArgumentNode: ArgumentChainNode = ArgumentChainNode()
+    protected val argumentChains: MutableList<List<ArgumentNode>> = mutableListOf()
     protected val subCommands: MutableList<CommandBuilder> = mutableListOf()
     protected var executor: ContextWrapper<CommandSourceStack>.(CommandSourceStack) -> Int =
         { source -> 1 }
@@ -21,9 +21,8 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
         permissionChecker = block
     }
 
-    fun arguments(block: ArgumentChainDSL.() -> Unit) {
-        val argumentRegistrar = ArgumentChainDSL(rootArgumentNode)
-        argumentRegistrar.apply(block)
+    fun arguments(block: ArgumentListDSL.() -> Unit) {
+        argumentChains.add(ArgumentListDSL().apply(block).arguments)
     }
 
     fun executes(block: ContextWrapper<CommandSourceStack>.(source: CommandSourceStack) -> Int) {
@@ -50,11 +49,13 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
         }
 
         // TODO 아무리 봐도 이 코드는 좀 아닌것 같음 아니다 꽤 괜찮을지도
-        if (arguments.isEmpty()) {
+        if (argumentChains.isEmpty()) {
             rootBuilder.executes(executeBlock)
 
         } else {
-            for (builder in buildArgumentNodes<CommandSourceStack>(TODO(), executeBlock)) {
+            val argumentChainNode = ArgumentChainNode(argumentChains)
+            val argumentBuilders = argumentChainNode.connectExecuteBlock(executeBlock)
+            for (builder in argumentBuilders) {
                 rootBuilder.then(builder)
             }
         }
