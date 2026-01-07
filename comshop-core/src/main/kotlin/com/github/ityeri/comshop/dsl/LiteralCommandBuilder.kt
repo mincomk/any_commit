@@ -1,16 +1,17 @@
-package com.github.ityeri.comshop.builder
+package com.github.ityeri.comshop.dsl
 
-import com.github.ityeri.comshop.ArgumentData
-import com.github.ityeri.comshop.ArgumentRegistrar
 import com.github.ityeri.comshop.ContextWrapper
+import com.github.ityeri.comshop.argument.ArgumentChainNode
+import com.github.ityeri.comshop.argument.ArgumentNode
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder.literal
+import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 
 abstract class LiteralCommandBuilder() : CommandBuilder {
     abstract val name: String
-    protected val arguments: MutableList<ArgumentData<*>> = mutableListOf()
+    protected val argumentChains: MutableList<List<ArgumentNode>> = mutableListOf()
     protected val subCommands: MutableList<CommandBuilder> = mutableListOf()
     protected var executor: ContextWrapper<CommandSourceStack>.(CommandSourceStack) -> Int =
         { source -> 1 }
@@ -20,8 +21,8 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
         permissionChecker = block
     }
 
-    fun arguments(block: ArgumentRegistrar.() -> Unit) {
-        ArgumentRegistrar(arguments).apply(block)
+    fun arguments(block: ArgumentListDSL.() -> Unit) {
+        argumentChains.add(ArgumentListDSL().apply(block).arguments)
     }
 
     fun executes(block: ContextWrapper<CommandSourceStack>.(source: CommandSourceStack) -> Int) {
@@ -43,31 +44,36 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
             rootBuilder.then(subCommand.createBuilder())
         }
 
+        val executeBlock: (CommandContext<CommandSourceStack>) -> Int = { context ->
+            ContextWrapper(context).run { executor(context.source) }
+        }
+
         // TODO 아무리 봐도 이 코드는 좀 아닌것 같음 아니다 꽤 괜찮을지도
-        if (arguments.isEmpty()) {
-            rootBuilder.executes { context ->
-                ContextWrapper(context).run { executor(context.source) }
-            }
+        if (argumentChains.isEmpty()) {
+            rootBuilder.executes(executeBlock)
 
         } else {
-            var previousBuilder: ArgumentBuilder<CommandSourceStack, *>? = null
-            var currentBuilder: ArgumentBuilder<CommandSourceStack, *>? = null
-
-            for (argumentData in arguments.reversed()) {
-                currentBuilder = argumentData.createBuilder<CommandSourceStack>()
-
-                if (previousBuilder == null) {
-                    previousBuilder = currentBuilder.executes { context ->
-                        ContextWrapper(context).run { executor(context.source) }
-                    }
-                } else {
-                    previousBuilder = currentBuilder.then(previousBuilder)
-                }
+            val argumentChainNode = ArgumentChainNode(argumentChains)
+            val argumentBuilders = argumentChainNode.connectExecuteBlock(executeBlock)
+            for (builder in argumentBuilders) {
+                rootBuilder.then(builder)
             }
-
-            rootBuilder.then(currentBuilder!!)
         }
 
         return rootBuilder
+    }
+}
+
+
+fun <S> buildArgumentNodes(
+    nodes: List<ArgumentNode>, executeBlock: (CommandContext<S>) -> Int
+): List<ArgumentBuilder<S, *>> {
+    if (nodes.size == 1) {
+        return nodes[0].connectExecuteBlock(executeBlock)
+    }
+    else {
+        return nodes[0].connectArgumentBuilder(
+            buildArgumentNodes(nodes.subList(1, nodes.size - 1), executeBlock)
+        )
     }
 }

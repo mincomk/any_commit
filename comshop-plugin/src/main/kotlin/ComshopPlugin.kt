@@ -1,8 +1,11 @@
-import com.github.ityeri.comshop.builder.CommandDSL.Companion.command
+import com.github.ityeri.comshop.dsl.CommandDSL.Companion.command
 import com.github.ityeri.comshop.CommandRegistrar
+import com.mojang.brigadier.arguments.BoolArgumentType
+import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.plugin.java.JavaPlugin
 
 
@@ -11,21 +14,30 @@ class ComshopPlugin : JavaPlugin() {
     override fun onEnable() {
         CommandRegistrar.lifecycleRegister(this)
 
+
         val greetingCommand = command("greeting") {
             requires { source -> source.sender.isOp }
 
             arguments {
+                "player" { ArgumentTypes.player() }
+                union {
+                    "test1" { BoolArgumentType.bool() }
+                    "test2" { ArgumentTypes.hexColor() }
+                    "test3" { IntegerArgumentType.integer() }
+                }
                 "message" { StringArgumentType.word() }
             }
 
             executes { source ->
                 val message = getArg("message", String::class)
                 source.sender.sendMessage(message)
+                println(getArg("test3", Object::class) as Int)
+                println(getArg("test3", NamedTextColor::class))
 
                 0
             }
 
-            then("player") {
+            then("pplayer") {
                 arguments {
                     "player" { ArgumentTypes.player() }
                     "message" { StringArgumentType.word() }
