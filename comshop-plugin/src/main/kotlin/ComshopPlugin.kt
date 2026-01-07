@@ -1,11 +1,12 @@
 import com.github.ityeri.comshop.dsl.CommandDSL.Companion.command
 import com.github.ityeri.comshop.CommandRegistrar
 import com.mojang.brigadier.arguments.BoolArgumentType
+import com.mojang.brigadier.arguments.FloatArgumentType
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
-import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.plugin.java.JavaPlugin
 
 
@@ -19,34 +20,39 @@ class ComshopPlugin : JavaPlugin() {
             requires { source -> source.sender.isOp }
 
             arguments {
-                "player" { ArgumentTypes.player() }
+                "float" to FloatArgumentType.floatArg()
                 union {
-                    "test1" { BoolArgumentType.bool() }
-                    "test2" { ArgumentTypes.hexColor() }
-                    "test3" { IntegerArgumentType.integer() }
+                    "test1" to BoolArgumentType.bool()
+                    "test1" to ArgumentTypes.hexColor()
+                    "test1" to IntegerArgumentType.integer()
                 }
-                "message" { StringArgumentType.word() }
+                "message" to {
+                    StringArgumentType.word()
+                }
             }
 
             executes { source ->
-                val message = getArg("message", String::class)
-                source.sender.sendMessage(message)
-                println(getArg("test3", Object::class) as Int)
-                println(getArg("test3", NamedTextColor::class))
+                println("float: ${"float" to Float::class}")
+
+                println("test1: ${"test1" nullOr Boolean::class}")
+                println("test2: ${"test2" nullOr TextColor::class}")
+                println("test3: ${"test3" nullOr Int::class}")
+
+                println("message: ${"message" to String::class}")
 
                 0
             }
 
             then("pplayer") {
                 arguments {
-                    "player" { ArgumentTypes.player() }
-                    "message" { StringArgumentType.word() }
+                    "player" to ArgumentTypes.player()
+                    "message" to StringArgumentType.word()
                 }
 
                 executes { source ->
-                    val playerResolver = getArg("player", PlayerSelectorArgumentResolver::class)
+                    val playerResolver = "player" to PlayerSelectorArgumentResolver::class
                     val player = playerResolver.resolve(source).first()
-                    val message = getArg("message", String::class)
+                    val message = "message" to String::class
 
                     player.sendMessage(message)
 
@@ -56,7 +62,7 @@ class ComshopPlugin : JavaPlugin() {
         }
 
         CommandRegistrar.register(greetingCommand)
-        CommandRegistrar.register(ExampleCommand())
+//        CommandRegistrar.register(ExampleCommand())
     }
 
     override fun onDisable() {
