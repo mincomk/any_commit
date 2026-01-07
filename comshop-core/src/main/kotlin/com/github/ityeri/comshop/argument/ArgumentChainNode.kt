@@ -7,19 +7,19 @@ class ArgumentChainNode(
     val argumentChains: List<List<ArgumentNode>>
 ): ArgumentNode {
     override fun <S> connectArgumentBuilder(argumentBuilders: List<ArgumentBuilder<S, *>>): List<ArgumentBuilder<S, *>> {
-        return argumentChains.map { argumentChain ->
+        return argumentChains.flatMap { argumentChain ->
             var lastArgumentNodes: List<ArgumentBuilder<S, *>> = argumentBuilders
 
             for (argumentNode in argumentChain.reversed())  {
                 lastArgumentNodes = argumentNode.connectArgumentBuilder(lastArgumentNodes)
             }
 
-            return lastArgumentNodes
+            lastArgumentNodes
         }
     }
 
     override fun <S> connectExecuteBlock(executeBlock: (CommandContext<S>) -> Int): List<ArgumentBuilder<S, *>> {
-        return argumentChains.map { argumentChain ->
+        return argumentChains.flatMap { argumentChain ->
             var lastArgumentNodes: List<ArgumentBuilder<S, *>> =
                 argumentChain.last().connectExecuteBlock(executeBlock)
 
@@ -28,7 +28,7 @@ class ArgumentChainNode(
                 lastArgumentNodes = argumentNode.connectArgumentBuilder(lastArgumentNodes)
             }
 
-            return lastArgumentNodes
+            lastArgumentNodes
         }
     }
 }
