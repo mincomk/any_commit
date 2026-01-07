@@ -18,7 +18,7 @@ class ArgumentListDSL {
 
     fun union(block: ArgumentListDSL.() -> Unit) {
         val unionArguments = ArgumentListDSL().apply(block).arguments
-        val argumentUnionNode = ArgumentChainNode(arguments.map { listOf(it) })
+        val argumentUnionNode = ArgumentChainNode(unionArguments.map { listOf(it) })
         arguments.add(argumentUnionNode)
     }
 }
