@@ -2,7 +2,6 @@ package com.github.ityeri.comshop.dsl
 
 import com.github.ityeri.comshop.argument.ArgumentChainNode
 import com.github.ityeri.comshop.argument.ArgumentNode
-import com.mojang.brigadier.arguments.StringArgumentType
 
 class ArgumentChainDSL {
     internal val argumentChains: MutableList<List<ArgumentNode>> = mutableListOf()
