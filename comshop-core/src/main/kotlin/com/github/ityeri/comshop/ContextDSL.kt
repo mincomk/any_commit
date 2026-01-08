@@ -1,6 +1,8 @@
 package com.github.ityeri.comshop
 
 import com.mojang.brigadier.context.CommandContext
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.argument.resolvers.ArgumentResolver
 import kotlin.reflect.KClass
 
 class ContextDSL<S>(val context: CommandContext<S>) {
@@ -14,5 +16,13 @@ class ContextDSL<S>(val context: CommandContext<S>) {
         } catch (e: IllegalArgumentException) {
             null
         }
+    }
+
+    infix fun <T: Any> ArgumentResolver<T>.resolve(source: CommandSourceStack): T {
+        return resolve(source)
+    }
+
+    infix fun <T: Any> ArgumentResolver<List<T>>.resolveFirst(source: CommandSourceStack): T {
+        return resolve(source).first()
     }
 }

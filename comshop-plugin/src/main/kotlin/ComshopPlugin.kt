@@ -48,8 +48,7 @@ class ComshopPlugin : JavaPlugin() {
                 }
 
                 executes { source, sender ->
-                    val playerResolver = "player" to PlayerSelectorArgumentResolver::class
-                    val player = playerResolver.resolve(source).first()
+                    val player = "player" to PlayerSelectorArgumentResolver::class resolveFirst source
 
                     val message = "message" to String::class
 
