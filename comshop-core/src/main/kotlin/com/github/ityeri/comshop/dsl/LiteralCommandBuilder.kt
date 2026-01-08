@@ -8,13 +8,15 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder.literal
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import org.bukkit.command.CommandSender
 
 abstract class LiteralCommandBuilder() : CommandBuilder {
     abstract val name: String
     protected val argumentChains: MutableList<List<ArgumentNode>> = mutableListOf()
     protected val subCommands: MutableList<CommandBuilder> = mutableListOf()
-    protected var executor: ContextDSL<CommandSourceStack>.(CommandSourceStack) -> Int =
-        { source -> 1 }
+    protected var executor:
+            ContextDSL<CommandSourceStack>.(source: CommandSourceStack, sender: CommandSender) -> Unit =
+        { _, _  -> }
     private var permissionChecker: (source: CommandSourceStack) -> Boolean = { true }
 
     fun requires(block: (source: CommandSourceStack) -> Boolean) {
@@ -25,7 +27,9 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
         argumentChains.add(ArgumentListDSL().apply(block).arguments)
     }
 
-    fun executes(block: ContextDSL<CommandSourceStack>.(source: CommandSourceStack) -> Int) {
+    fun executes(
+        block: ContextDSL<CommandSourceStack>.(source: CommandSourceStack, sender: CommandSender) -> Unit
+    ) {
         executor = block
     }
 
@@ -45,7 +49,8 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
         }
 
         val executeBlock: (CommandContext<CommandSourceStack>) -> Int = { context ->
-            ContextDSL(context).run { executor(context.source) }
+            ContextDSL(context).run { executor(context.source, context.source.sender) }
+            0
         }
 
         // TODO 아무리 봐도 이 코드는 좀 아닌것 같음 아니다 꽤 괜찮을지도

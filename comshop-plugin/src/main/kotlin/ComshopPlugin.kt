@@ -31,7 +31,7 @@ class ComshopPlugin : JavaPlugin() {
                 }
             }
 
-            executes { source ->
+            executes { source, sender ->
                 println("float: ${"float" to Float::class}")
 
                 println("test1: ${"test1" nullOr Boolean::class}")
@@ -39,8 +39,6 @@ class ComshopPlugin : JavaPlugin() {
                 println("test3: ${"test3" nullOr Int::class}")
 
                 println("message: ${"message" to String::class}")
-
-                0
             }
 
             then("pplayer") {
@@ -49,14 +47,13 @@ class ComshopPlugin : JavaPlugin() {
                     "message" to StringArgumentType.word()
                 }
 
-                executes { source ->
+                executes { source, sender ->
                     val playerResolver = "player" to PlayerSelectorArgumentResolver::class
                     val player = playerResolver.resolve(source).first()
+
                     val message = "message" to String::class
 
                     player.sendMessage(message)
-
-                    0
                 }
             }
         }
