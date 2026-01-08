@@ -1,6 +1,6 @@
 package com.github.ityeri.comshop.dsl
 
-import com.github.ityeri.comshop.ContextWrapper
+import com.github.ityeri.comshop.ContextDSL
 import com.github.ityeri.comshop.argument.ArgumentChainNode
 import com.github.ityeri.comshop.argument.ArgumentNode
 import com.mojang.brigadier.builder.ArgumentBuilder
@@ -13,7 +13,7 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
     abstract val name: String
     protected val argumentChains: MutableList<List<ArgumentNode>> = mutableListOf()
     protected val subCommands: MutableList<CommandBuilder> = mutableListOf()
-    protected var executor: ContextWrapper<CommandSourceStack>.(CommandSourceStack) -> Int =
+    protected var executor: ContextDSL<CommandSourceStack>.(CommandSourceStack) -> Int =
         { source -> 1 }
     private var permissionChecker: (source: CommandSourceStack) -> Boolean = { true }
 
@@ -25,7 +25,7 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
         argumentChains.add(ArgumentListDSL().apply(block).arguments)
     }
 
-    fun executes(block: ContextWrapper<CommandSourceStack>.(source: CommandSourceStack) -> Int) {
+    fun executes(block: ContextDSL<CommandSourceStack>.(source: CommandSourceStack) -> Int) {
         executor = block
     }
 
@@ -45,7 +45,7 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
         }
 
         val executeBlock: (CommandContext<CommandSourceStack>) -> Int = { context ->
-            ContextWrapper(context).run { executor(context.source) }
+            ContextDSL(context).run { executor(context.source) }
         }
 
         // TODO 아무리 봐도 이 코드는 좀 아닌것 같음 아니다 꽤 괜찮을지도
