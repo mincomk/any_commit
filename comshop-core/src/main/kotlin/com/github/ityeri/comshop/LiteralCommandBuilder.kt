@@ -39,6 +39,14 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
         subCommands.add(builder)
     }
 
+    fun then(name: String, block: LiteralCommandBuilder.() -> Unit) {
+        subCommands.add(
+            object: LiteralCommandBuilder() {
+                override val name = name
+            }.apply(block)
+        )
+    }
+
 
     override fun createBuilder(): LiteralArgumentBuilder<CommandSourceStack> {
         val rootBuilder = literal<CommandSourceStack>(name)
