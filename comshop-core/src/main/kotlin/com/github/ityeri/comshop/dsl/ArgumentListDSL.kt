@@ -1,10 +1,12 @@
 package com.github.ityeri.comshop.dsl
 
+import com.github.ityeri.comshop.dsl.ComshopDSL
 import com.github.ityeri.comshop.argument.ArgumentChainNode
 import com.github.ityeri.comshop.argument.ArgumentNode
 import com.github.ityeri.comshop.argument.SingleArgumentNode
 import com.mojang.brigadier.arguments.ArgumentType
 
+@ComshopDSL
 class ArgumentListDSL {
     internal val arguments: MutableList<ArgumentNode> = mutableListOf()
 

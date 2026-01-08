@@ -1,8 +1,10 @@
 package com.github.ityeri.comshop.dsl
 
+import com.github.ityeri.comshop.dsl.ComshopDSL
 import com.github.ityeri.comshop.argument.ArgumentChainNode
 import com.github.ityeri.comshop.argument.ArgumentNode
 
+@ComshopDSL
 class ArgumentChainDSL {
     internal val argumentChains: MutableList<List<ArgumentNode>> = mutableListOf()
 

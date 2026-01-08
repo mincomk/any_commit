@@ -1,5 +1,9 @@
 package com.github.ityeri.comshop.dsl
 
+import com.github.ityeri.comshop.dsl.ComshopDSL
+import com.github.ityeri.comshop.LiteralCommandBuilder
+
+@ComshopDSL
 class CommandDSL(override val name: String) : LiteralCommandBuilder() {
     companion object {
         fun command(name: String, block: CommandDSL.() -> Unit = {}): CommandDSL {

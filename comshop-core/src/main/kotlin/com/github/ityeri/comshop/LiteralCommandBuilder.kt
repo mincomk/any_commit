@@ -1,8 +1,9 @@
-package com.github.ityeri.comshop.dsl
+package com.github.ityeri.comshop
 
-import com.github.ityeri.comshop.ContextDSL
+import com.github.ityeri.comshop.dsl.ContextDSL
 import com.github.ityeri.comshop.argument.ArgumentChainNode
 import com.github.ityeri.comshop.argument.ArgumentNode
+import com.github.ityeri.comshop.dsl.ArgumentListDSL
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder.literal

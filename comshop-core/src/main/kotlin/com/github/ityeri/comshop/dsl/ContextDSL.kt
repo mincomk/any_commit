@@ -1,10 +1,12 @@
-package com.github.ityeri.comshop
+package com.github.ityeri.comshop.dsl
 
+import com.github.ityeri.comshop.dsl.ComshopDSL
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.argument.resolvers.ArgumentResolver
 import kotlin.reflect.KClass
 
+@ComshopDSL
 class ContextDSL<S>(val context: CommandContext<S>) {
     infix fun <T: Any> String.to(clazz: KClass<T>): T {
         return context.getArgument<T>(this, clazz.java)
