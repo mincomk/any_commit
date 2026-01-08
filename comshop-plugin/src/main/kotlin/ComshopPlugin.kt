@@ -23,8 +23,8 @@ class ComshopPlugin : JavaPlugin() {
                 "float" to FloatArgumentType.floatArg()
                 union {
                     "test1" to BoolArgumentType.bool()
-                    "test1" to ArgumentTypes.hexColor()
-                    "test1" to IntegerArgumentType.integer()
+                    "test2" to ArgumentTypes.hexColor()
+                    "test3" to IntegerArgumentType.integer()
                 }
                 "message" to {
                     StringArgumentType.word()
