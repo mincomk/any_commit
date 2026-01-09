@@ -1,9 +1,8 @@
-package com.github.ityeri.comshop
+package com.github.ityeri.comshop.dsl
 
-import com.github.ityeri.comshop.dsl.ContextDSL
+import com.github.ityeri.comshop.CommandBuilder
 import com.github.ityeri.comshop.argument.ArgumentChainNode
 import com.github.ityeri.comshop.argument.ArgumentNode
-import com.github.ityeri.comshop.dsl.ArgumentListDSL
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder.literal
@@ -11,8 +10,15 @@ import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.command.CommandSender
 
-abstract class LiteralCommandBuilder() : CommandBuilder {
-    abstract val name: String
+
+fun command(name: String, block: LiteralCommandDSL.() -> Unit = {}): LiteralCommandDSL {
+    val commandDsl = LiteralCommandDSL(name)
+    commandDsl.apply(block)
+    return commandDsl
+}
+
+@ComshopDSL
+open class LiteralCommandDSL(val name: String) : CommandBuilder {
     protected val argumentChains: MutableList<List<ArgumentNode>> = mutableListOf()
     protected val subCommands: MutableList<CommandBuilder> = mutableListOf()
     protected var executor:
@@ -39,11 +45,9 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
         subCommands.add(builder)
     }
 
-    fun then(name: String, block: LiteralCommandBuilder.() -> Unit) {
+    fun then(name: String, block: LiteralCommandDSL.() -> Unit) {
         subCommands.add(
-            object: LiteralCommandBuilder() {
-                override val name = name
-            }.apply(block)
+            LiteralCommandDSL(name).apply(block)
         )
     }
 
@@ -58,7 +62,7 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
         }
 
         val executeBlock: (CommandContext<CommandSourceStack>) -> Int = { context ->
-            ContextDSL(context).run { executor(context.source, context.source.sender) }
+            ContextDSL(context).executor(context.source, context.source.sender)
             0
         }
 
@@ -77,7 +81,6 @@ abstract class LiteralCommandBuilder() : CommandBuilder {
         return rootBuilder
     }
 }
-
 
 fun <S> buildArgumentNodes(
     nodes: List<ArgumentNode>, executeBlock: (CommandContext<S>) -> Int
