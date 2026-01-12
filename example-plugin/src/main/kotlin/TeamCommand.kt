@@ -17,11 +17,15 @@ val teamCommand = command("myteam") {
 
         executes { source, sender ->
             val teamName = "name" to String::class
+            val color = "color" to TextColor::class
 
             if (teamName !in teams) {
-                teams.put(
-                    "name" to String::class,
-                    Team("name" to String::class, "color" to TextColor::class)
+                teams[teamName] = Team(teamName, color)
+
+                sender.sendMessage(
+                    Component.text("New team ")
+                        .append(Component.text(teamName, color))
+                        .append(Component.text(" is added"))
                 )
             } else {
                 sender.sendMessage("Team \"$teamName\" is already exists")
@@ -40,8 +44,15 @@ val teamCommand = command("myteam") {
             val team = teams[teamName]
 
             if (team != null) {
+                val player = "player" to PlayerSelectorArgumentResolver::class resolveFirst source
+
                 team.members.add(
-                    "player" to PlayerSelectorArgumentResolver::class resolveFirst source
+                    player
+                )
+
+                sender.sendMessage(
+                    Component.text("Player ${player.name} is added to ")
+                        .append(Component.text(teamName, team.color))
                 )
             } else {
                 sender.sendMessage("Team \"$teamName\" not found")
@@ -55,7 +66,11 @@ val teamCommand = command("myteam") {
         teams.values.forEach { team ->
             sender.sendMessage(
                 Component.text(" |  ")
-                    .append(Component.text(team.name, team.color))
+                    .append(Component.text(team.name + "\n", team.color))
+                    .append(Component.text(" |   |  members: "))
+                    .append(Component.text(
+                        team.members.joinToString(", ") { it.name }
+                    ))
             )
         }
     }
