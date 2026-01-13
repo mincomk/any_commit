@@ -91,7 +91,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.ityeri:comshop:TODO")
+    implementation("com.github.ityeri:comshop:v1.0.0-beta.3")
 }
 ```
 
@@ -105,7 +105,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.ityeri:comshop:TODO'
+    implementation 'com.github.ityeri:comshop:v1.0.0-beta.3'
 }
 ```
 
