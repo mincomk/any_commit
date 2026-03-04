@@ -24,6 +24,11 @@ dependencies = [
     "yarl>=1.22.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "dotenv>=0.9.9",
+]
+
 [project.urls]
 Homepage = "https://github.com/ityeri/krawen"
 Issues = "https://github.com/ityeri/krawen/issues"
@@ -34,8 +39,3 @@ build-backend = "uv_build"
 
 [tool.uv]
 managed = true
-
-[project.optional-dependencies]
-dev = [
-    "dotenv>=0.9.9",
-]
