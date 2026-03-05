@@ -13,3 +13,6 @@ class HttpResponseData:
     reason: bytes
     headers: dict[bytes, bytes]
     body: AsyncChunkedReader
+
+    def __post_init__(self):
+        self.headers = {key.lower(): value for key, value in self.headers.items()}
