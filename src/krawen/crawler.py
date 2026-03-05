@@ -23,15 +23,11 @@ class Crawler:
     def __init__(
             self,
             root_host_url: URL | str,
-            source_store_path: str,
-            url_manager: EndpointStore,
-            url_encoder: Callable[[str], str] = default_encoder
+            endpoint_store: EndpointStore,
     ):
         converted_host_url = URL(root_host_url)
         self.root_host_url: URL = URL.build(scheme=converted_host_url.scheme, host=converted_host_url.host)
-        self.source_store_path: str = source_store_path
-        self.url_manager: EndpointStore = url_manager
-        self.url_encoder: Callable[[str], str] = url_encoder
+        self.endpoint_store: EndpointStore = endpoint_store
 
         self.playwright: Playwright | None = None
         self.http_client: ClientSession | None = None
@@ -174,7 +170,7 @@ class Crawler:
                 async for chunk in res.content.iter_chunked(1024):
                     await f.write(chunk)
 
-            await self.url_manager.put_endpoint(url, file_name)
+            await self.endpoint_store.put_endpoint(url, file_name)
 
 
     async def download_source_file(self, url: URL):
