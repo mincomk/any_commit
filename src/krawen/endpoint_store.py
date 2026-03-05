@@ -9,7 +9,7 @@ class DuplicateURLError(Exception): ...
 class URLNotFoundError(Exception): ...
 
 
-class URLManager(ABC): # TODO rename
+class EndpointStore(ABC): # TODO rename
     """
     얘는 파일 관리 역할은 안함
     """
@@ -23,7 +23,7 @@ class URLManager(ABC): # TODO rename
     async def get_url(self, url: URL) -> str: ...
 
 
-class JsonURLManager(URLManager):
+class JsonEndpointStore(EndpointStore):
     def __init__(self, file_path: str):
         super().__init__()
         self.file_path: str = file_path

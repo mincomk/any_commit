@@ -10,7 +10,7 @@ from aiohttp import ClientSession, NonHttpUrlClientError
 from playwright.async_api import Playwright, async_playwright
 from yarl import URL
 
-from krawen.url_manager import URLManager
+from krawen.endpoint_store import EndpointStore
 from krawen.utils import parsing_utils
 from krawen.utils.url_encoders import default_encoder
 
@@ -24,12 +24,12 @@ class Crawler:
             self,
             root_url: URL | str,
             source_store_path: str,
-            url_manager: URLManager,
+            url_manager: EndpointStore,
             url_encoder: Callable[[str], str] = default_encoder
     ):
         self.root_url: URL = URL(root_url)
         self.source_store_path: str = source_store_path
-        self.url_manager: URLManager = url_manager
+        self.url_manager: EndpointStore = url_manager
         self.url_encoder: Callable[[str], str] = url_encoder
 
         self.playwright: Playwright | None = None

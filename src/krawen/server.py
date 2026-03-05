@@ -8,7 +8,7 @@ from fastapi import FastAPI, APIRouter, Response, Request, HTTPException
 from fastapi.responses import StreamingResponse
 from yarl import URL
 
-from krawen.url_manager import URLManager, URLNotFoundError
+from krawen.endpoint_store import EndpointStore, URLNotFoundError
 from krawen.utils import parsing_utils
 from krawen.utils.file import read_in_chunks
 
@@ -21,13 +21,13 @@ class Server:
             self,
             root_url: URL | str,
             source_store_path: str,
-            url_manager: URLManager,
+            url_manager: EndpointStore,
             not_found_handler: Callable[[URL], Awaitable[None]] = default_not_found_handler
     ):
         self.app = FastAPI()
         self.root_url: URL = URL(root_url)
         self.source_store_path: str = source_store_path
-        self.url_manager: URLManager = url_manager
+        self.url_manager: EndpointStore = url_manager
         self.not_found_handler: Callable[[URL], Awaitable[None]] = not_found_handler
 
     def setup(self):

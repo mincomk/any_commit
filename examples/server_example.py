@@ -5,7 +5,7 @@ import dotenv
 
 import krawen
 from krawen import Server
-from krawen.url_manager import JsonURLManager
+from krawen.endpoint_store import JsonEndpointStore
 
 krawen.utils.setup_logging()
 dotenv.load_dotenv()
@@ -15,7 +15,7 @@ root_url = os.getenv('ROOT_URL')
 data_file_path = os.getenv('DATA_FILE_PATH')
 
 os.makedirs(source_store_path, exist_ok=True)
-url_manager = JsonURLManager(data_file_path)
+url_manager = JsonEndpointStore(data_file_path)
 
 try:
     asyncio.run(url_manager.load())
