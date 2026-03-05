@@ -5,7 +5,7 @@ from krawen.async_chunked_reader import AsyncChunkedReader
 
 @dataclass
 class HttpResponseData:
-    http_version: bytes
+    http_version: str
     status_code: int
     reason: bytes
     headers: dict[str, bytes]
