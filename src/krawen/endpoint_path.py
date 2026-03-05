@@ -9,11 +9,11 @@ class EndpointPath:
     method: MethodType
     url: URL
 
-class MethodType(Enum):
-    GET = 'GET',
-    HEAD = 'HEAD',
-    POST = 'POST',
-    PUT = 'PUT',
+class MethodType(str, Enum):
+    GET = 'GET'
+    HEAD = 'HEAD'
+    POST = 'POST'
+    PUT = 'PUT'
     DELETE = 'DELETE'
     CONNECT = 'CONNECT'
     OPTIONS = 'OPTIONS'
