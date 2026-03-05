@@ -8,8 +8,8 @@ from krawen.endpoint_path import EndpointPath
 from krawen.http_response_data import HttpResponseData
 
 
-class DuplicateURLError(Exception): ...
-class URLNotFoundError(Exception): ...
+class DuplicateEndpointError(Exception): ...
+class EndpointNotFoundError(Exception): ...
 
 
 class EndpointStore(ABC): # TODO rename
@@ -56,7 +56,7 @@ class JsonEndpointStore(EndpointStore):
             if url not in self.data:
                 self.data[url] = file_path
             else:
-                raise DuplicateURLError()
+                raise DuplicateEndpointError()
 
         await self.run_save_job()
 
@@ -64,7 +64,7 @@ class JsonEndpointStore(EndpointStore):
         try:
             self.data.pop(url)
         except KeyError:
-            raise URLNotFoundError()
+            raise EndpointNotFoundError()
 
         await self.run_save_job()
 
@@ -72,4 +72,4 @@ class JsonEndpointStore(EndpointStore):
         try:
             return self.data[url]
         except KeyError:
-            raise URLNotFoundError()
+            raise EndpointNotFoundError()

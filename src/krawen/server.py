@@ -8,7 +8,7 @@ from fastapi import FastAPI, APIRouter, Response, Request, HTTPException
 from fastapi.responses import StreamingResponse
 from yarl import URL
 
-from krawen.endpoint_store import EndpointStore, URLNotFoundError
+from krawen.endpoint_store import EndpointStore, EndpointNotFoundError
 from krawen.utils import parsing_utils
 from krawen.utils.file import read_in_chunks
 
@@ -41,7 +41,7 @@ class Server:
 
         try:
             file_name = await self.url_manager.get_url(url)
-        except URLNotFoundError:
+        except EndpointNotFoundError:
             await self.not_found_handler(url)
             raise HTTPException(status_code=404)
 
