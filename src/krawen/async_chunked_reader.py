@@ -11,7 +11,7 @@ class AsyncChunkedReader(ABC):
     @abstractmethod
     async def close(self): ...
     @abstractmethod
-    async def seek(self, position: int): ...
+    async def reset(self): ...
 
     @abstractmethod
     async def read_next_chunk(self) -> bytes: ...
@@ -29,7 +29,6 @@ class AsyncChunkedReader(ABC):
         return total size as bytes
         """
 
-
 class AsyncChunkedFileReader(AsyncChunkedReader):
     def __init__(self, path: str, chunk_size: int = 8192):
         self._path: str = path
@@ -41,8 +40,8 @@ class AsyncChunkedFileReader(AsyncChunkedReader):
         self._file = await aiofiles.open(self._path, 'rb')
     async def close(self):
         await self._file.close()
-    async def seek(self, position: int):
-        await self._file.seek(position)
+    async def reset(self):
+        await self._file.seek(0)
 
     async def read_next_chunk(self) -> bytes:
         return await self._file.read(self._chunk_size)
