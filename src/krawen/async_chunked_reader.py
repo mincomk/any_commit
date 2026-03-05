@@ -14,7 +14,7 @@ class AsyncChunkedReader(ABC):
     async def reset(self): ...
 
     @abstractmethod
-    async def read_next_chunk(self) -> bytes | None:
+    async def read_next_chunk(self) -> bytes:
         """
         if pointer is reached end, it should return None
         """
