@@ -4,7 +4,7 @@ from krawen import endpoint_store
 from krawen import utils
 from krawen import async_chunked_reader
 from endpoint_path import EndpointPath, MethodType
-from http_response_data import HttpResponseData
+from http_response_data import HttpResponseData, HttpResponseInfo
 
 __all__ = [
     'Crawler',
@@ -14,4 +14,5 @@ __all__ = [
     'EndpointPath',
     'MethodType',
     'HttpResponseData',
+    'HttpResponseInfo'
 ]
