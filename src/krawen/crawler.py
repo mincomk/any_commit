@@ -23,10 +23,10 @@ class Crawler:
             root_host_url: URL | str | None,
             endpoint_store: EndpointStore,
     ):
-        self.root_host_url: URL | None = None
+        self.root_origin_url: URL | None = None
         try:
             converted_host_url = URL(root_host_url)
-            self.root_host_url: URL = URL.build(scheme=converted_host_url.scheme, host=converted_host_url.host)
+            self.root_origin_url: URL = converted_host_url.origin()
         except TypeError: pass
 
         self.endpoint_store: EndpointStore = endpoint_store
@@ -51,6 +51,10 @@ class Crawler:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.stop()
 
+
+    async def download(self, page_url: URL):
+        # in progress..
+        ...
 
     async def download_page(self, page_url: URL | str, recursive: bool = True):
         if self.playwright is None:
@@ -188,11 +192,19 @@ class Crawler:
             return True
 
         else:
-            return url.host == self.root_host_url.host
+            return url.host == self.root_origin_url.host
 
     def convert_absolute_url(self, url: URL | str) -> URL:
         url = URL(url)
         if not url.is_absolute():
-            return self.root_host_url.join(url)
+            return self.root_origin_url.join(url)
         else:
             return url
+
+    def should_download(self, url: URL) -> bool:
+        # in progress..
+        if self.root_origin_url is None:
+            return True
+        else:
+            url.origin()
+            return url.is_relative_to(self.root_origin_url)
