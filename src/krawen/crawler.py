@@ -20,11 +20,15 @@ class NotHTMLPageError(Exception): ...
 class Crawler:
     def __init__(
             self,
-            root_host_url: URL | str,
+            root_host_url: URL | str | None,
             endpoint_store: EndpointStore,
     ):
-        converted_host_url = URL(root_host_url)
-        self.root_host_url: URL = URL.build(scheme=converted_host_url.scheme, host=converted_host_url.host)
+        self.root_host_url: URL | None = None
+        try:
+            converted_host_url = URL(root_host_url)
+            self.root_host_url: URL = URL.build(scheme=converted_host_url.scheme, host=converted_host_url.host)
+        except TypeError: pass
+
         self.endpoint_store: EndpointStore = endpoint_store
 
         self.playwright: Playwright | None = None
