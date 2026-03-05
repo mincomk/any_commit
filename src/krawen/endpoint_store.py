@@ -50,7 +50,7 @@ class JsonEndpointStore(EndpointStore):
         return {
             'http_version': response_info.http_version,
             'status_code': response_info.status_code,
-            'reason': response_info.reason.decode('ascii'),
+            'reason': response_info.reason,
             'headers': {
                 key: base64.b64encode(value).decode('ascii')
                 for key, value in response_info.headers.items()
