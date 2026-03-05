@@ -22,12 +22,13 @@ class NotHTMLPageError(Exception): ...
 class Crawler:
     def __init__(
             self,
-            root_url: URL | str,
+            root_host_url: URL | str,
             source_store_path: str,
             url_manager: EndpointStore,
             url_encoder: Callable[[str], str] = default_encoder
     ):
-        self.root_url: URL = URL(root_url)
+        converted_host_url = URL(root_host_url)
+        self.root_host_url: URL = URL.build(scheme=converted_host_url.scheme, host=converted_host_url.host)
         self.source_store_path: str = source_store_path
         self.url_manager: EndpointStore = url_manager
         self.url_encoder: Callable[[str], str] = url_encoder
@@ -192,11 +193,11 @@ class Crawler:
             return True
 
         else:
-            return url.host == self.root_url.host
+            return url.host == self.root_host_url.host
 
     def convert_absolute_url(self, url: URL | str) -> URL:
         url = URL(url)
         if not url.is_absolute():
-            return self.root_url.join(url)
+            return self.root_host_url.join(url)
         else:
             return url
