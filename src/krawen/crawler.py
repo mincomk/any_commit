@@ -202,9 +202,7 @@ class Crawler:
             return url
 
     def should_download(self, url: URL) -> bool:
-        # in progress..
         if self.root_origin_url is None:
             return True
         else:
-            url.origin()
-            return url.is_relative_to(self.root_origin_url)
+            return url.origin() == self.root_origin_url
