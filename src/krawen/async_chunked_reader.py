@@ -1,0 +1,55 @@
+import os
+from abc import ABC, abstractmethod
+
+import aiofiles
+from aiofiles.threadpool.binary import AsyncBufferedReader
+
+
+class AsyncChunkedReader(ABC):
+    @abstractmethod
+    async def open(self): ...
+    @abstractmethod
+    async def close(self): ...
+    @abstractmethod
+    async def reset(self): ...
+
+    @abstractmethod
+    async def read_next_chunk(self) -> bytes:
+        """
+        if pointer is reached end, it should return None
+        """
+
+    @property
+    @abstractmethod
+    def chunk_size(self) -> int:
+        """
+        return chunk size as bytes
+        """
+    @property
+    @abstractmethod
+    def size(self) -> int:
+        """
+        return total size as bytes
+        """
+
+class AsyncChunkedFileReader(AsyncChunkedReader):
+    def __init__(self, path: str, chunk_size: int = 8192):
+        self._path: str = path
+        # aiofiles types are weird..
+        self._file: AsyncBufferedReader | None = None
+        self._chunk_size: int = chunk_size
+
+    async def open(self):
+        self._file = await aiofiles.open(self._path, 'rb')
+    async def close(self):
+        await self._file.close()
+    async def reset(self):
+        await self._file.seek(0)
+
+    async def read_next_chunk(self) -> bytes:
+        return await self._file.read(self._chunk_size)
+
+    @property
+    def chunk_size(self) -> int: return self._chunk_size
+    @property
+    def size(self) -> int: return os.fstat(self._file.fileno()).st_size
