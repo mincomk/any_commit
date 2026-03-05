@@ -39,10 +39,11 @@ class AsyncLocalFileStore(AsyncFileStore):
         async with aiofiles.open(self.get_file_path(key), 'wb') as f:
             while True:
                 chunk = await data.read_next_chunk()
-                if chunk is not None:
-                    await f.write(chunk)
-                else:
+
+                if not chunk:
                     break
+
+                await f.write(chunk)
 
     async def get_file(self, key: str) -> AsyncChunkedReader:
         return AsyncChunkedFileReader(self.get_file_path(key))
