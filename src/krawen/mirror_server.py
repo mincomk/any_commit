@@ -25,7 +25,7 @@ class MirrorServer:
             not_found_handler: Callable[[URL], Awaitable[None]] = default_not_found_handler
     ):
         self.app = FastAPI()
-        self.root_url: URL = URL(root_origin_url)
+        self.root_origin_url: URL = URL(root_origin_url)
         self.source_store_path: str = source_store_path
         self.url_manager: EndpointStore = url_manager
         self.not_found_handler: Callable[[URL], Awaitable[None]] = not_found_handler
@@ -37,7 +37,7 @@ class MirrorServer:
 
     async def on_route(self, request: Request):
         relative_url = URL(URL(str(request.url)).raw_path_qs)
-        url = self.root_url.join(relative_url)
+        url = self.root_origin_url.join(relative_url)
 
         try:
             file_name = await self.url_manager.get_url(url)
