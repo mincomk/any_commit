@@ -1,11 +1,12 @@
 import os
 from abc import ABC, abstractmethod
+from typing import AsyncIterator
 
 import aiofiles
 from aiofiles.threadpool.binary import AsyncBufferedReader
 
 
-class AsyncChunkedReader(ABC):
+class AsyncChunkedReader(ABC, AsyncIterator[bytes]):
     @abstractmethod
     async def open(self): ...
     @abstractmethod
@@ -32,6 +33,7 @@ class AsyncChunkedReader(ABC):
         return total size as bytes
         """
 
+
 class AsyncChunkedFileReader(AsyncChunkedReader):
     def __init__(self, path: str, chunk_size: int = 8192):
         self._path: str = path
@@ -48,6 +50,8 @@ class AsyncChunkedFileReader(AsyncChunkedReader):
 
     async def read_next_chunk(self) -> bytes:
         return await self._file.read(self._chunk_size)
+    async def __anext__(self) -> bytes:
+        return await self.read_next_chunk()
 
     @property
     def chunk_size(self) -> int: return self._chunk_size
