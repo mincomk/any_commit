@@ -5,11 +5,16 @@ from asyncio import Task
 
 import aiofiles
 import bs4
+import h11
 from aiohttp import ClientSession, NonHttpUrlClientError
+from multidict import MultiDictProxy
 from playwright.async_api import Playwright, async_playwright
 from yarl import URL
 
+from krawen import EndpointPath, HTTPResponseData
+from krawen.async_chunked_reader import AsyncClientResponseContentReader
 from krawen.endpoint_store import EndpointStore
+from krawen.http_response_data import HTTPResponseInfo
 from krawen.utils import parsing_utils
 
 
@@ -52,9 +57,30 @@ class Crawler:
         await self.stop()
 
 
-    async def download(self, page_url: URL):
-        # in progress..
-        ...
+    async def download(self, endpoint_path: EndpointPath):
+        if not self.should_download(endpoint_path.url):
+            raise URLOutOfBoundError()
+
+        async with self.http_client.request(url=endpoint_path.url, method=endpoint_path.method.value) as response:
+            response_info = HTTPResponseInfo(
+                http_version=f'{response.version.major}.{response.version.minor}',
+                status_code=response.status,
+                reason=response.reason,
+                headers=[
+                    (key, value.encode('latin-1'))
+                    for key in response.headers.keys()
+                    for value in response.headers.getall(key)
+                ]
+            )
+
+            await self.endpoint_store.put_endpoint(
+                endpoint_path,
+                HTTPResponseData(
+                    info=response_info,
+                    body=AsyncClientResponseContentReader(response)
+                )
+            )
+
 
     async def download_page(self, page_url: URL | str, recursive: bool = True):
         if self.playwright is None:
