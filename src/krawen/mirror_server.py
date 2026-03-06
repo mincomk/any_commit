@@ -21,15 +21,31 @@ class MirrorServer:
             self,
             root_origin_url: URL | str,
             endpoint_store: EndpointStore,
+            api_host: str = '0.0.0.0',
+            api_port: int = 8000
     ):
         self.app = FastAPI()
         self.root_origin_url: URL = URL(root_origin_url)
         self.endpoint_store: EndpointStore = endpoint_store
 
+        self.api_host: str = api_host
+        self.api_port: int = api_port
+
     def setup(self):
         router = APIRouter()
         router.add_api_route('/{path:path}', self.on_route, methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
         self.app.include_router(router)
+
+    async def start(self):
+        config = uvicorn.Config(
+            self.app,
+            host=self.api_host,
+            port=self.api_port,
+            log_config=None,
+            loop='asyncio'
+        )
+        server = uvicorn.Server(config)
+        await server.serve()
 
     async def on_route(self, request: Request):
         relative_url = URL(URL(str(request.url)).raw_path_qs)
