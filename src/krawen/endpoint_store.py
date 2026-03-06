@@ -26,6 +26,8 @@ class EndpointStore(ABC): # TODO rename
     async def rm_endpoint(self, endpoint_path: EndpointPath): ...
     @abstractmethod
     async def get_endpoint(self, endpoint_path: EndpointPath) -> HTTPResponseData: ...
+    @abstractmethod
+    async def contains(self, endpoint_path: EndpointPath) -> bool: ...
 
 
 class JsonEndpointStore(EndpointStore):
@@ -109,3 +111,6 @@ class JsonEndpointStore(EndpointStore):
             )
         except KeyError:
             raise EndpointNotFoundError()
+
+    async def contains(self, endpoint_path: EndpointPath) -> bool:
+        return endpoint_path in self._data
