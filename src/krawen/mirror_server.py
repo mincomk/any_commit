@@ -16,7 +16,7 @@ from krawen.utils.file import read_in_chunks
 async def default_not_found_handler(url: URL) -> str: pass
 
 
-class Server:
+class MirrorServer:
     def __init__(
             self,
             root_url: URL | str,
