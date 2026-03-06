@@ -20,11 +20,11 @@ class MirrorServer:
     def __init__(
             self,
             root_origin_url: URL | str,
-            url_manager: EndpointStore,
+            endpoint_store: EndpointStore,
     ):
         self.app = FastAPI()
         self.root_origin_url: URL = URL(root_origin_url)
-        self.url_manager: EndpointStore = url_manager
+        self.endpoint_store: EndpointStore = endpoint_store
 
     def setup(self):
         router = APIRouter()
@@ -36,7 +36,7 @@ class MirrorServer:
         url = self.root_origin_url.join(relative_url)
 
         try:
-            file_name = await self.url_manager.get_url(url)
+            file_name = await self.endpoint_store.get_url(url)
         except EndpointNotFoundError:
             await self.not_found_handler(url)
             raise HTTPException(status_code=404)
