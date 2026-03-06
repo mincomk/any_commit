@@ -4,14 +4,12 @@ from playwright.async_api import Playwright, async_playwright, Browser, Viewport
 from playwright.async_api import Request
 from yarl import URL
 
-from krawen.endpoint_path import HTTPMethod
 from krawen.async_chunked_reader import AsyncClientResponseContentReader
 from krawen.endpoint_path import EndpointPath
 from krawen.endpoint_store import EndpointStore
 from krawen.http_response_data import HTTPResponseData
 from krawen.http_response_data import HTTPResponseInfo
-from krawen.utils import parsing_utils
-from krawen.utils.parsing_utils import parse_urls_from_tag_attr, to_absolute_url
+from krawen.utils import parse_urls_from_tag_attr, to_absolute_url
 
 
 class URLOutOfBoundError(Exception): ...
@@ -83,7 +81,7 @@ class Crawler:
 
             return response_info
 
-    async def get_sub_urls(self, url: URL) -> list[URL]:
+    async def get_sub_urls(self, target_url: URL) -> list[URL]:
         urls: list[URL] = list()
         context = await self.browser.new_context(
             viewport=ViewportSize(width=1920, height=2160)
@@ -95,7 +93,7 @@ class Crawler:
 
         page.on('request', on_request)
 
-        await page.goto(str(url))
+        await page.goto(str(target_url))
 
         html = await page.content()
         soup = bs4.BeautifulSoup(html, features='html.parser')
@@ -105,7 +103,7 @@ class Crawler:
 
             for key, value in attrs.items():
                 urls.extend(map(
-                    lambda u: URL(u),
+                    lambda u: to_absolute_url(target_url, URL(u)),
                     parse_urls_from_tag_attr(key, value)
                 ))
 
