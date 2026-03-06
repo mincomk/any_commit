@@ -33,7 +33,7 @@ async def main():
         )
     )
 
-    await endpoint_store.save()
+    await endpoint_store.save(indent=4)
 
 if __name__ == '__main__':
     asyncio.run(main())
