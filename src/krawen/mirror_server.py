@@ -20,15 +20,11 @@ class MirrorServer:
     def __init__(
             self,
             root_origin_url: URL | str,
-            source_store_path: str,
             url_manager: EndpointStore,
-            not_found_handler: Callable[[URL], Awaitable[None]] = default_not_found_handler
     ):
         self.app = FastAPI()
         self.root_origin_url: URL = URL(root_origin_url)
-        self.source_store_path: str = source_store_path
         self.url_manager: EndpointStore = url_manager
-        self.not_found_handler: Callable[[URL], Awaitable[None]] = not_found_handler
 
     def setup(self):
         router = APIRouter()
