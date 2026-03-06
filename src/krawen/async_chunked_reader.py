@@ -4,7 +4,10 @@ from typing import AsyncIterator
 
 import aiofiles
 from aiofiles.threadpool.binary import AsyncBufferedReader
+from aiohttp import ClientResponse
 
+
+DEFAULT_CHUNK_SIZE = 8192
 
 class AsyncChunkedReader(ABC, AsyncIterator[bytes]):
     @abstractmethod
@@ -35,7 +38,7 @@ class AsyncChunkedReader(ABC, AsyncIterator[bytes]):
 
 
 class AsyncChunkedFileReader(AsyncChunkedReader):
-    def __init__(self, path: str, chunk_size: int = 8192):
+    def __init__(self, path: str, chunk_size: int = DEFAULT_CHUNK_SIZE):
         self._path: str = path
         # aiofiles types are weird..
         self._file: AsyncBufferedReader | None = None
@@ -57,3 +60,24 @@ class AsyncChunkedFileReader(AsyncChunkedReader):
     def chunk_size(self) -> int: return self._chunk_size
     @property
     def total_size(self) -> int: return os.fstat(self._file.fileno()).st_size
+
+class AsyncClientResponseContentReader(AsyncChunkedReader):
+    def __init__(self, client_response: ClientResponse, chunk_size: int = DEFAULT_CHUNK_SIZE):
+        self._chunk_iterator: AsyncIterator[bytes] = \
+            client_response.content.iter_chunked(DEFAULT_CHUNK_SIZE)
+        self._chunk_size = chunk_size
+        self._total_size = client_response.content.total_bytes
+
+    async def open(self): pass
+    async def close(self): pass
+
+    async def read_next_chunk(self) -> bytes:
+        return await anext(self._chunk_iterator)
+
+    async def __anext__(self):
+        return await self.read_next_chunk()
+
+    @property
+    def chunk_size(self) -> int: return self._chunk_size
+    @property
+    def total_size(self) -> int: return self._total_size
