@@ -28,7 +28,7 @@ class AsyncChunkedReader(ABC, AsyncIterator[bytes]):
         """
     @property
     @abstractmethod
-    def size(self) -> int:
+    def total_size(self) -> int:
         """
         return total size as bytes
         """
@@ -56,4 +56,4 @@ class AsyncChunkedFileReader(AsyncChunkedReader):
     @property
     def chunk_size(self) -> int: return self._chunk_size
     @property
-    def size(self) -> int: return os.fstat(self._file.fileno()).st_size
+    def total_size(self) -> int: return os.fstat(self._file.fileno()).st_size
