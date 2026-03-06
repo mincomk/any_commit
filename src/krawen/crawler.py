@@ -56,7 +56,7 @@ class Crawler:
         await self.stop()
 
 
-    async def download(self, endpoint_path: EndpointPath):
+    async def download(self, endpoint_path: EndpointPath) -> HTTPResponseInfo:
         if not self.should_download(endpoint_path.url):
             raise URLOutOfBoundError()
 
@@ -79,6 +79,8 @@ class Crawler:
                     body=AsyncClientResponseContentReader(response)
                 )
             )
+
+            return response_info
 
 
     async def download_page(self, page_url: URL | str, recursive: bool = True):
