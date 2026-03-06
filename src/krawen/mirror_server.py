@@ -1,19 +1,11 @@
-import mimetypes
-import os.path
-from collections.abc import Callable
-from typing import Awaitable
-import aiofiles
 import uvicorn
-from fastapi import FastAPI, APIRouter, Response, Request, HTTPException
+from fastapi import FastAPI, APIRouter, Request, HTTPException
 from fastapi.responses import StreamingResponse
 from yarl import URL
 
+from krawen import EndpointPath, HTTPMethod
 from krawen.endpoint_store import EndpointStore, EndpointNotFoundError
-# from krawen.utils import is_text_content_type
-from krawen.utils.file import read_in_chunks
-
-
-async def default_not_found_handler(url: URL) -> str: pass
+from krawen.utils import to_absolute_url
 
 
 class MirrorServer:
@@ -25,7 +17,7 @@ class MirrorServer:
             api_port: int = 8000
     ):
         self.app = FastAPI()
-        self.root_origin_url: URL = URL(root_origin_url)
+        self.root_origin_url: URL = URL(root_origin_url).origin()
         self.endpoint_store: EndpointStore = endpoint_store
 
         self.api_host: str = api_host
@@ -54,27 +46,22 @@ class MirrorServer:
         await server.serve()
 
     async def on_route(self, request: Request):
-        relative_url = URL(URL(str(request.url)).raw_path_qs)
-        url = self.root_origin_url.join(relative_url)
-
+        endpoint_path = EndpointPath(
+            url=self.to_original_url(URL(request.url)),
+            method=HTTPMethod.from_name(request.method)
+        )
         try:
-            file_name = await self.endpoint_store.get_url(url)
+            response_data = await self.endpoint_store.get_endpoint(endpoint_path)
         except EndpointNotFoundError:
-            await self.not_found_handler(url)
             raise HTTPException(status_code=404)
 
-        file_path = os.path.join(self.source_store_path, file_name)
-        content_type, _ = mimetypes.guess_type(file_name)
+        headers = [(key, value.decode('latin-1')) for key, value in response_data.info.headers]
 
-        if "TODO":
-            async with aiofiles.open(file_path, 'r', encoding='utf-8') as f:
-                body = await f.read()
-                return Response(content=body, media_type=content_type)
+        return StreamingResponse(
+            response_data.body,
+            headers=headers,
+            status_code=response_data.info.status_code
+        )
 
-        else:
-            return StreamingResponse(read_in_chunks(file_path), media_type=content_type)
-
-    async def run(self, host: str = '127.0.0.1', port=8000):
-        config = uvicorn.Config(app=self.app, host=host, port=port)
-        server = uvicorn.Server(config=config)
-        await server.serve()
+    def to_original_url(self, url: URL) -> URL:
+        return to_absolute_url(self.root_origin_url, url)
