@@ -59,7 +59,11 @@ class KrawenCrawler:
         if not self.should_download(endpoint_path.url):
             raise URLOutOfBoundError()
 
-        async with self.http_client.request(url=endpoint_path.url, method=endpoint_path.method.value) as response:
+        async with self.http_client.request(
+                url=endpoint_path.url,
+                method=endpoint_path.method.value,
+                auto_decompress=False
+        ) as response:
             response_info = HTTPResponseInfo(
                 http_version=f'{response.version.major}.{response.version.minor}',
                 status_code=response.status,
