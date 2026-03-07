@@ -75,9 +75,9 @@ class JsonEndpointStore(EndpointStore):
     async def load(self):
         async with aiofiles.open(self.json_file_path, mode='r', encoding='utf-8') as f:
             text = await f.read()
-            raw_data: dict[str, str] = json.loads(text)
+            raw_data: dict[str, JsonEndpointStore.JsonResponseInfo] = json.loads(text)
             self._data = {
-                self.str_to_endpoint_path(endpoint): self.json_to_response_info(json.loads(response_data))
+                self.str_to_endpoint_path(endpoint): self.json_to_response_info(response_data)
                 for endpoint, response_data in raw_data.items()
             }
 
