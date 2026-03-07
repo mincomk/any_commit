@@ -75,7 +75,6 @@
             gtk3
             alsa-lib
             libX11
-            cacert
           ];
         in
         {
@@ -83,7 +82,11 @@
             packages = [
               virtualenv
               pkgs.uv
-              pkgs.playwright
+            ];
+            buildInputs = with pkgs; [
+              pkg-config
+              fontconfig
+              freetype
             ];
             env = {
               UV_NO_SYNC = "1";
@@ -92,7 +95,6 @@
               LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath runtimeLibs;
 
               PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
-              PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
             };
             shellHook = ''
               unset PYTHONPATH
