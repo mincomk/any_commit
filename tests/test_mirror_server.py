@@ -18,6 +18,7 @@ mirror_server = MirrorServer(
 )
 
 async def main():
+    mirror_server.setup()
     await endpoint_store.load()
     await mirror_server.start()
 
