@@ -46,7 +46,7 @@ class AsyncLocalFileStore(AsyncFileStore):
                 await f.write(chunk)
 
     async def get_file(self, key: str) -> AsyncChunkedReader:
-        return AsyncChunkedFileReader(self.get_file_path(key))
+        return await AsyncChunkedFileReader.open(self.get_file_path(key))
 
     async def rm_file(self, key: str):
         try:
