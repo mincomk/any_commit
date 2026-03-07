@@ -61,7 +61,6 @@
             ]
           )
       );
-
     in
     {
       devShells = forAllSystems (
@@ -73,6 +72,10 @@
 
           runtimeLibs = with pkgs; [
             # Required rumtime libraries
+            gtk3
+            alsa-lib
+            libX11
+            cacert
           ];
         in
         {
@@ -80,12 +83,16 @@
             packages = [
               virtualenv
               pkgs.uv
+              pkgs.playwright
             ];
             env = {
               UV_NO_SYNC = "1";
               UV_PYTHON = pythonSet.python.interpreter;
               UV_PYTHON_DOWNLOADS = "never";
               LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath runtimeLibs;
+
+              PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+              PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
             };
             shellHook = ''
               unset PYTHONPATH
