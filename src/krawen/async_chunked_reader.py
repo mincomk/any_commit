@@ -78,7 +78,12 @@ class AsyncClientResponseContentReader(AsyncChunkedReader):
             return bytes()
 
     async def __anext__(self):
-        return await self.read_next_chunk()
+        data = await self.read_next_chunk()
+
+        if len(data) == 0:
+            raise StopAsyncIteration()
+        else:
+            return data
 
     @property
     def chunk_size(self) -> int: return self._chunk_size
