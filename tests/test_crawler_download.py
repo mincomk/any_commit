@@ -17,7 +17,7 @@ crawler = KrawenCrawler(endpoint_store=endpoint_store)
 async def main():
     async with crawler:
         endpoint_path = EndpointPath(
-            url=URL('https://example.com'),
+                url=URL('http://example.com'),
             method=HTTPMethod.GET
         )
 

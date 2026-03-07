@@ -13,7 +13,7 @@ file_store = AsyncLocalFileStore('./run/store')
 endpoint_store = JsonEndpointStore('./run/endpoints.json', file_store=file_store)
 
 mirror_server = MirrorServer(
-    root_origin_url=URL('https://example.com'),
+    root_origin_url=URL('http://example.com'),
     endpoint_store=endpoint_store
 )
 
