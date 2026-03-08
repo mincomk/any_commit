@@ -14,6 +14,7 @@ from krawen.utils import parse_urls_from_tag_attr, to_absolute_url
 
 
 class URLOutOfBoundError(Exception): ...
+class URLNotAbsoluteError(Exception): ...
 class NotHTMLPageError(Exception): ...
 
 
@@ -56,6 +57,8 @@ class KrawenCrawler:
 
 
     async def download(self, endpoint_path: EndpointPath) -> HTTPResponseInfo:
+        if not endpoint_path.url.is_absolute():
+            raise URLNotAbsoluteError(f'Passed url "{endpoint_path.url}" is not absolute')
         if not self.should_download(endpoint_path.url):
             raise URLOutOfBoundError(f'URL "{endpoint_path.url}" : {endpoint_path.method} is out of processing bound')
 
@@ -86,6 +89,9 @@ class KrawenCrawler:
             return response_info
 
     async def get_page_sub_urls(self, target_url: URL) -> list[URL]:
+        if not target_url.is_absolute():
+            raise URLNotAbsoluteError(f'Passed url "{target_url}" is not absolute')
+
         async with self.http_client.get(target_url) as response:
             urls: list[URL] = list()
             html = await response.content.read()
@@ -104,6 +110,9 @@ class KrawenCrawler:
 
 
     async def get_network_requests(self, target_url: URL) -> list[EndpointPath]:
+        if not target_url.is_absolute():
+            raise URLNotAbsoluteError(f'Passed url "{target_url}" is not absolute')
+
         network_requests: list[EndpointPath] = list()
         context = await self.browser.new_context(
             viewport=ViewportSize(width=1920, height=2160)
