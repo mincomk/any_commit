@@ -55,8 +55,6 @@ class KrawenMirrorServer:
         except EndpointNotFoundError:
             raise HTTPException(status_code=404)
 
-        await response_data.body.open()
-
         actual_response = StreamingResponse(
             response_data.body,
             status_code=response_data.info.status_code
