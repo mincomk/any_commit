@@ -38,7 +38,7 @@ class AsyncChunkedFileReader(AsyncChunkedReader):
 
     @classmethod
     async def open(cls, path: str, chunk_size: int = DEFAULT_CHUNK_SIZE):
-        file = aiofiles.open(path, 'rb')
+        file = await aiofiles.open(path, 'rb')
         return cls(file, chunk_size)
 
     async def read_next_chunk(self) -> bytes:
