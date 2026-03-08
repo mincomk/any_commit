@@ -16,7 +16,7 @@ crawler = KrawenCrawler(endpoint_store=endpoint_store)
 
 async def main():
     async with crawler:
-        urls = await crawler.get_sub_urls(URL('http://example.com'))
+        urls = await crawler.get_page_sub_urls(URL('http://example.com'))
         for url in urls: print(url)
 
     await endpoint_store.save(indent=4)

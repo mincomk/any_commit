@@ -4,6 +4,7 @@ from playwright.async_api import Playwright, async_playwright, Browser, Viewport
 from playwright.async_api import Request
 from yarl import URL
 
+from krawen import HTTPMethod
 from krawen.async_chunked_reader import AsyncClientResponseContentReader
 from krawen.endpoint_path import EndpointPath
 from krawen.endpoint_store import EndpointStore
@@ -84,31 +85,39 @@ class KrawenCrawler:
 
             return response_info
 
-    async def get_sub_urls(self, target_url: URL) -> list[URL]:
-        urls: list[URL] = list()
+    async def get_page_sub_urls(self, target_url: URL) -> list[URL]:
+        async with self.http_client.get(target_url) as response:
+            urls: list[URL] = list()
+            html = await response.content.read()
+            soup = bs4.BeautifulSoup(html, features='html.parser')
+
+            for tag in soup.find_all(True):
+                attrs = tag.attrs
+
+                for key, value in attrs.items():
+                    urls.extend(map(
+                        lambda u: to_absolute_url(target_url, URL(u)),
+                        parse_urls_from_tag_attr(key, value)
+                    ))
+
+            return urls
+
+
+    async def get_network_requests(self, target_url: URL) -> list[EndpointPath]:
+        network_requests: list[EndpointPath] = list()
         context = await self.browser.new_context(
             viewport=ViewportSize(width=1920, height=2160)
         )
         page = await context.new_page()
 
         async def on_request(request: Request):
-            urls.append(URL(request.url))
-
+            network_requests.append(EndpointPath(
+                url=to_absolute_url(self.root_origin_url, URL(request.url)),
+                method=HTTPMethod.from_name(request.method)
+            ))
         page.on('request', on_request)
 
         await page.goto(str(target_url))
-
-        html = await page.content()
-        soup = bs4.BeautifulSoup(html, features='html.parser')
-
-        for tag in soup.find_all(True):
-            attrs = tag.attrs
-
-            for key, value in attrs.items():
-                urls.extend(map(
-                    lambda u: to_absolute_url(target_url, URL(u)),
-                    parse_urls_from_tag_attr(key, value)
-                ))
 
         await page.evaluate(
             """
@@ -131,7 +140,7 @@ class KrawenCrawler:
         await page.close()
         await context.close()
 
-        return urls
+        return network_requests
 
 
     def should_download(self, url: URL) -> bool:
