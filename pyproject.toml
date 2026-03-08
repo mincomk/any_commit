@@ -19,7 +19,6 @@ dependencies = [
     "asyncio>=4.0.0",
     "bs4>=0.0.2",
     "fastapi>=0.121.1",
-    "h11>=0.16.0",
     "playwright>=1.58.0",
     "uvicorn>=0.38.0",
     "yarl>=1.22.0",
