@@ -11,13 +11,13 @@ from krawen.utils import to_absolute_url
 class KrawenMirrorServer:
     def __init__(
             self,
-            root_origin_url: URL | str,
+            root_origin_url: URL,
             endpoint_store: EndpointStore,
             api_host: str = '0.0.0.0',
             api_port: int = 8000
     ):
         self.app = FastAPI()
-        self.root_origin_url: URL = URL(root_origin_url).origin()
+        self.root_origin_url: URL = root_origin_url.origin()
         self.endpoint_store: EndpointStore = endpoint_store
 
         self.api_host: str = api_host
