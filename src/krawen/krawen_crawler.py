@@ -57,7 +57,7 @@ class KrawenCrawler:
 
     async def download(self, endpoint_path: EndpointPath) -> HTTPResponseInfo:
         if not self.should_download(endpoint_path.url):
-            raise URLOutOfBoundError()
+            raise URLOutOfBoundError(f'URL "{endpoint_path.url}" : {endpoint_path.method} is out of processing bound')
 
         async with self.http_client.request(
                 url=endpoint_path.url,
