@@ -2,7 +2,6 @@ import asyncio
 import base64
 import json
 from abc import abstractmethod, ABC
-from xml.sax.saxutils import escape
 
 import aiofiles
 from yarl import URL
