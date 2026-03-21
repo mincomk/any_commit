@@ -1,0 +1,10 @@
+{"name":"philiprehberger-cache-kit","vers":"0.1.0","deps":[],"cksum":"c3f5a4a9ff53d87ddf82422d83225988783f4d59515ddea12af79bd781111e3e","features":{},"yanked":false,"pubtime":"2026-03-10T05:06:30Z"}
+{"name":"philiprehberger-cache-kit","vers":"0.2.0","deps":[],"cksum":"250191e68cfc73992039923aff8f45dd2d1b97782f5f369e17325ab3d35ff1ce","features":{},"yanked":false,"pubtime":"2026-03-13T18:30:42Z"}
+{"name":"philiprehberger-cache-kit","vers":"0.3.0","deps":[],"cksum":"52b45bcc8da0fe18acbf3636d7f958c79a34e18e8403a0be29729044bff97ba0","features":{},"yanked":false,"pubtime":"2026-03-13T19:35:50Z"}
+{"name":"philiprehberger-cache-kit","vers":"0.3.1","deps":[],"cksum":"872c9153faef39b5722fd692bbb8992d7cc90ab16a4ccb282ab5fb9a6221b480","features":{},"yanked":false,"pubtime":"2026-03-16T16:00:32Z"}
+{"name":"philiprehberger-cache-kit","vers":"0.3.2","deps":[],"cksum":"fd25e3e311ebd4747d72c0bce30ebd8a578498f17ab0a97366ad0ef35bbb9d0e","features":{},"yanked":false,"pubtime":"2026-03-16T16:22:11Z"}
+{"name":"philiprehberger-cache-kit","vers":"0.3.3","deps":[],"cksum":"2425b61f52addbcb1e152b0de511aa2a7867e34b88a9438dffb119df9d0b37b2","features":{},"yanked":false,"pubtime":"2026-03-16T16:44:35Z"}
+{"name":"philiprehberger-cache-kit","vers":"0.3.4","deps":[],"cksum":"b814e66396dab583c8d0a6611224b497105daeec0aad9b014417159958073d8e","features":{},"yanked":false,"pubtime":"2026-03-16T16:56:08Z"}
+{"name":"philiprehberger-cache-kit","vers":"0.3.6","deps":[],"cksum":"06ab4f9d093867a7367056bedd0006caa33d5816b2a0b5612c0d6f92941f7ac7","features":{},"yanked":false,"rust_version":"1.70","pubtime":"2026-03-16T20:59:41Z"}
+{"name":"philiprehberger-cache-kit","vers":"0.4.0","deps":[],"cksum":"905b298630fc1b0cea39483b509466ac577c2b6d49e915c3331459e53a9f275e","features":{},"yanked":false,"rust_version":"1.70","pubtime":"2026-03-17T17:43:48Z"}
+{"name":"philiprehberger-cache-kit","vers":"0.4.1","deps":[],"cksum":"7d24ddf45c0813aebede3e6922accaf6bc7b1c4c317d182c184318f20907a0cf","features":{},"yanked":false,"rust_version":"1.70","pubtime":"2026-03-20T21:35:38Z"}
