@@ -1,0 +1,25 @@
+import asyncio
+import os
+
+from yarl import URL
+
+from krawen import KrawenCrawler
+from krawen.async_file_store import AsyncLocalFileStore
+from krawen.endpoint_store import JsonEndpointStore
+
+os.makedirs('./run/store', exist_ok=True)
+
+file_store = AsyncLocalFileStore('./run/store')
+endpoint_store = JsonEndpointStore('./run/endpoints.json', file_store=file_store)
+
+crawler = KrawenCrawler(endpoint_store=endpoint_store)
+
+async def main():
+    async with crawler:
+        urls = await crawler.get_page_sub_urls(URL('http://example.com'))
+        for url in urls: print(url)
+
+    await endpoint_store.save(indent=4)
+
+if __name__ == '__main__':
+    asyncio.run(main())
